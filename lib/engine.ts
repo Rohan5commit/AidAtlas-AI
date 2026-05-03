@@ -1,4 +1,8 @@
+<<<<<<< codex/build-aidatlas-ai-for-quantum-sprint-k3tmbo
 import { IntakeInput, PlanOutput, Recommendation } from './types';
+=======
+import { IntakeInput, PlanOutput } from './types';
+>>>>>>> main
 
 const disclaimer =
   'AidAtlas AI suggestions are informational only and are not official legal, medical, or government determinations.';
@@ -34,6 +38,7 @@ function fallbackPlan(input: IntakeInput): Omit<PlanOutput, 'id' | 'createdAt'> 
   };
 }
 
+<<<<<<< codex/build-aidatlas-ai-for-quantum-sprint-k3tmbo
 function normalizeCategories(categories: unknown): Recommendation[] {
   if (!Array.isArray(categories)) return [];
   return categories
@@ -52,6 +57,8 @@ function normalizeCategories(categories: unknown): Recommendation[] {
 }
 
 
+=======
+>>>>>>> main
 export async function generatePlan(input: IntakeInput): Promise<Omit<PlanOutput, 'id' | 'createdAt'>> {
   const key = process.env.NIM_API_KEY;
   if (!key) return fallbackPlan(input);
@@ -78,6 +85,7 @@ export async function generatePlan(input: IntakeInput): Promise<Omit<PlanOutput,
     const data = await res.json();
     const content = data?.choices?.[0]?.message?.content;
     const parsed = JSON.parse(content);
+<<<<<<< codex/build-aidatlas-ai-for-quantum-sprint-k3tmbo
     const categories = normalizeCategories(parsed?.categories);
     if (!categories.length) return fallbackPlan(input);
 
@@ -94,6 +102,9 @@ export async function generatePlan(input: IntakeInput): Promise<Omit<PlanOutput,
             .slice(0, 6)
         : fallbackPlan(input).progress
     };
+=======
+    return { ...parsed, disclaimer };
+>>>>>>> main
   } catch {
     return fallbackPlan(input);
   }
