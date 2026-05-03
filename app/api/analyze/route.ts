@@ -3,7 +3,6 @@ import { generatePlan } from '@/lib/engine';
 import { savePlan } from '@/lib/storage';
 import { IntakeInput, PlanOutput } from '@/lib/types';
 
-<<<<<<< codex/build-aidatlas-ai-for-quantum-sprint-k3tmbo
 const allowedUrgency = new Set(['low', 'medium', 'high', 'critical']);
 
 function isValidInput(input: Partial<IntakeInput>): input is IntakeInput {
@@ -24,10 +23,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Please complete all intake fields with valid values.' }, { status: 400 });
   }
 
-=======
-export async function POST(req: Request) {
-  const input = (await req.json()) as IntakeInput;
->>>>>>> main
   const plan = await generatePlan(input);
   const full: PlanOutput = {
     ...plan,
