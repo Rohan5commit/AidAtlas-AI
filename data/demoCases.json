@@ -1,0 +1,29 @@
+[
+  {
+    "id": "demo-student",
+    "fullName": "Maya Student",
+    "location": "Austin, TX",
+    "ageStatus": "20, undergraduate",
+    "urgency": "medium",
+    "goals": "Find scholarships and food support this month",
+    "situation": "I work part-time and cannot cover textbooks and rent. I also need reliable groceries until my next paycheck."
+  },
+  {
+    "id": "demo-family",
+    "fullName": "Carlos Family",
+    "location": "Phoenix, AZ",
+    "ageStatus": "34, parent of two",
+    "urgency": "high",
+    "goals": "Emergency rental and utility relief",
+    "situation": "I recently lost my job and received an eviction warning. I need immediate rent help and utility assistance."
+  },
+  {
+    "id": "demo-mental-health",
+    "fullName": "Jordan Care",
+    "location": "Seattle, WA",
+    "ageStatus": "28, employed",
+    "urgency": "high",
+    "goals": "Find affordable therapy and peer support",
+    "situation": "My anxiety has been rising and I am struggling to function at work. I need low-cost mental-health support quickly."
+  }
+]

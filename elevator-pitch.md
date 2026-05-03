@@ -1,0 +1,1 @@
+AidAtlas AI helps people in urgent life situations find the right support faster. In under a minute, users describe their needs and receive a personalized, structured action plan with priority scoring, checklists, and follow-up steps. It combines practical AI guidance with dependable fallback logic so support navigation works even when external APIs fail.
