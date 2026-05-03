@@ -1,21 +1,51 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import demoCases from '@/data/demoCases.json';
 import { IntakeInput, PlanOutput } from '@/lib/types';
 
 const initial: IntakeInput = { fullName: '', location: '', ageStatus: '', urgency: 'medium', goals: '', situation: '' };
 
+const fieldLabels: Record<keyof IntakeInput, string> = {
+  fullName: 'Name',
+  location: 'Location',
+  ageStatus: 'Age / student status',
+  urgency: 'Urgency',
+  goals: 'Goals',
+  situation: 'Situation'
+};
+
 export default function Home() {
   const [form, setForm] = useState<IntakeInput>(initial);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  const canSubmit = useMemo(
+    () => form.fullName.trim() && form.location.trim() && form.ageStatus.trim() && form.goals.trim() && form.situation.trim(),
+    [form]
+  );
 
   const submit = async () => {
     setLoading(true);
-    const res = await fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
-    const data = (await res.json()) as PlanOutput;
-    router.push(`/plan/${data.id}`);
+    setError(null);
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({ error: 'Failed to generate plan.' }));
+        throw new Error(e.error || 'Failed to generate plan.');
+      }
+      const data = (await res.json()) as PlanOutput;
+      router.push(`/plan/${data.id}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Something went wrong.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,16 +57,22 @@ export default function Home() {
       <section className="grid gap-6 md:grid-cols-3">
         <div className="card md:col-span-2 space-y-3">
           <h2 className="text-xl font-semibold">Guided Intake</h2>
-          {Object.entries(form).map(([k, v]) =>
-            k === 'urgency' ? (
-              <select key={k} className="input" value={v} onChange={(e) => setForm({ ...form, urgency: e.target.value as IntakeInput['urgency'] })}>
-                <option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="critical">critical</option>
-              </select>
-            ) : (
-              <input key={k} className="input" placeholder={k} value={v} onChange={(e) => setForm({ ...form, [k]: e.target.value })} />
-            )
-          )}
-          <button disabled={loading} onClick={submit} className="btn-primary">{loading ? 'Analyzing...' : 'Generate Action Plan'}</button>
+          <label className="text-sm font-medium">{fieldLabels.fullName}</label>
+          <input className="input" placeholder="Jane Doe" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
+          <label className="text-sm font-medium">{fieldLabels.location}</label>
+          <input className="input" placeholder="City, State" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+          <label className="text-sm font-medium">{fieldLabels.ageStatus}</label>
+          <input className="input" placeholder="22, college student" value={form.ageStatus} onChange={(e) => setForm({ ...form, ageStatus: e.target.value })} />
+          <label className="text-sm font-medium">{fieldLabels.urgency}</label>
+          <select className="input" value={form.urgency} onChange={(e) => setForm({ ...form, urgency: e.target.value as IntakeInput['urgency'] })}>
+            <option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="critical">critical</option>
+          </select>
+          <label className="text-sm font-medium">{fieldLabels.goals}</label>
+          <textarea className="input min-h-20" placeholder="Get food support and short-term rent help" value={form.goals} onChange={(e) => setForm({ ...form, goals: e.target.value })} />
+          <label className="text-sm font-medium">{fieldLabels.situation}</label>
+          <textarea className="input min-h-24" placeholder="Describe your current situation" value={form.situation} onChange={(e) => setForm({ ...form, situation: e.target.value })} />
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <button disabled={loading || !canSubmit} onClick={submit} className="btn-primary disabled:opacity-50">{loading ? 'Analyzing...' : 'Generate Action Plan'}</button>
         </div>
         <div className="card">
           <h3 className="font-semibold">Demo Mode</h3>

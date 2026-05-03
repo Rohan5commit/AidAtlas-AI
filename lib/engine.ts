@@ -1,4 +1,8 @@
+<<<<<<< codex/build-aidatlas-ai-for-quantum-sprint-k3tmbo
+import { IntakeInput, PlanOutput, Recommendation } from './types';
+=======
 import { IntakeInput, PlanOutput } from './types';
+>>>>>>> main
 
 const disclaimer =
   'AidAtlas AI suggestions are informational only and are not official legal, medical, or government determinations.';
@@ -34,6 +38,27 @@ function fallbackPlan(input: IntakeInput): Omit<PlanOutput, 'id' | 'createdAt'> 
   };
 }
 
+<<<<<<< codex/build-aidatlas-ai-for-quantum-sprint-k3tmbo
+function normalizeCategories(categories: unknown): Recommendation[] {
+  if (!Array.isArray(categories)) return [];
+  return categories
+    .filter((c) => typeof c === 'object' && c !== null)
+    .map((c) => {
+      const row = c as Record<string, unknown>;
+      return {
+        category: typeof row.category === 'string' ? row.category : 'Support option',
+        whyFit: typeof row.whyFit === 'string' ? row.whyFit : 'Potentially relevant based on your intake.',
+        nextActions: Array.isArray(row.nextActions) ? row.nextActions.filter((x): x is string => typeof x === 'string').slice(0, 5) : [],
+        checklist: Array.isArray(row.checklist) ? row.checklist.filter((x): x is string => typeof x === 'string').slice(0, 6) : [],
+        urgencyTag: typeof row.urgencyTag === 'string' ? row.urgencyTag : 'medium'
+      };
+    })
+    .slice(0, 4);
+}
+
+
+=======
+>>>>>>> main
 export async function generatePlan(input: IntakeInput): Promise<Omit<PlanOutput, 'id' | 'createdAt'>> {
   const key = process.env.NIM_API_KEY;
   if (!key) return fallbackPlan(input);
@@ -60,7 +85,26 @@ export async function generatePlan(input: IntakeInput): Promise<Omit<PlanOutput,
     const data = await res.json();
     const content = data?.choices?.[0]?.message?.content;
     const parsed = JSON.parse(content);
+<<<<<<< codex/build-aidatlas-ai-for-quantum-sprint-k3tmbo
+    const categories = normalizeCategories(parsed?.categories);
+    if (!categories.length) return fallbackPlan(input);
+
+    return {
+      profileSummary: typeof parsed?.profileSummary === 'string' ? parsed.profileSummary : fallbackPlan(input).profileSummary,
+      priorityScore: Number.isFinite(parsed?.priorityScore) ? Math.max(0, Math.min(100, Math.round(parsed.priorityScore))) : fallbackPlan(input).priorityScore,
+      categories,
+      followUpPlan: Array.isArray(parsed?.followUpPlan) ? parsed.followUpPlan.filter((x: unknown): x is string => typeof x === 'string').slice(0, 6) : fallbackPlan(input).followUpPlan,
+      disclaimer,
+      progress: Array.isArray(parsed?.progress)
+        ? parsed.progress
+            .filter((p: unknown) => typeof p === 'object' && p !== null)
+            .map((p: Record<string, unknown>) => ({ label: typeof p.label === 'string' ? p.label : 'Next step', done: Boolean(p.done) }))
+            .slice(0, 6)
+        : fallbackPlan(input).progress
+    };
+=======
     return { ...parsed, disclaimer };
+>>>>>>> main
   } catch {
     return fallbackPlan(input);
   }
