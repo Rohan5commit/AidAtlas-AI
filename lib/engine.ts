@@ -1,8 +1,4 @@
-<<<<<<< codex/build-aidatlas-ai-for-quantum-sprint-k3tmbo
 import { IntakeInput, PlanOutput, Recommendation } from './types';
-=======
-import { IntakeInput, PlanOutput } from './types';
->>>>>>> main
 
 const disclaimer =
   'AidAtlas AI suggestions are informational only and are not official legal, medical, or government determinations.';
@@ -38,7 +34,6 @@ function fallbackPlan(input: IntakeInput): Omit<PlanOutput, 'id' | 'createdAt'> 
   };
 }
 
-<<<<<<< codex/build-aidatlas-ai-for-quantum-sprint-k3tmbo
 function normalizeCategories(categories: unknown): Recommendation[] {
   if (!Array.isArray(categories)) return [];
   return categories
@@ -56,13 +51,9 @@ function normalizeCategories(categories: unknown): Recommendation[] {
     .slice(0, 4);
 }
 
-
-=======
->>>>>>> main
 export async function generatePlan(input: IntakeInput): Promise<Omit<PlanOutput, 'id' | 'createdAt'>> {
   const key = process.env.NIM_API_KEY;
   if (!key) return fallbackPlan(input);
-
   try {
     const prompt = `You are AidAtlas AI. Return strict JSON with keys: profileSummary, priorityScore (0-100 int), categories (array of 2-4 items with category, whyFit, nextActions[], checklist[], urgencyTag), followUpPlan[], disclaimer, progress[{label,done}]. Keep concise, practical.`;
     const res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
@@ -85,10 +76,8 @@ export async function generatePlan(input: IntakeInput): Promise<Omit<PlanOutput,
     const data = await res.json();
     const content = data?.choices?.[0]?.message?.content;
     const parsed = JSON.parse(content);
-<<<<<<< codex/build-aidatlas-ai-for-quantum-sprint-k3tmbo
     const categories = normalizeCategories(parsed?.categories);
     if (!categories.length) return fallbackPlan(input);
-
     return {
       profileSummary: typeof parsed?.profileSummary === 'string' ? parsed.profileSummary : fallbackPlan(input).profileSummary,
       priorityScore: Number.isFinite(parsed?.priorityScore) ? Math.max(0, Math.min(100, Math.round(parsed.priorityScore))) : fallbackPlan(input).priorityScore,
@@ -102,9 +91,6 @@ export async function generatePlan(input: IntakeInput): Promise<Omit<PlanOutput,
             .slice(0, 6)
         : fallbackPlan(input).progress
     };
-=======
-    return { ...parsed, disclaimer };
->>>>>>> main
   } catch {
     return fallbackPlan(input);
   }
