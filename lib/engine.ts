@@ -51,6 +51,7 @@ function normalizeCategories(categories: unknown): Recommendation[] {
     .slice(0, 4);
 }
 
+
 export async function generatePlan(input: IntakeInput): Promise<Omit<PlanOutput, 'id' | 'createdAt'>> {
   const key = process.env.NIM_API_KEY;
   if (!key) return fallbackPlan(input);
